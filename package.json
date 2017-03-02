@@ -4,6 +4,7 @@
   "description": "Quick and easy doubly and singly linked list implementation that allows for insertion at the start, end, before and after, as well as removal.",
   "main": "dist/hylian.js",
   "scripts": {
+    "build": "webpack",
     "test": "ava"
   },
   "repository": {
@@ -23,11 +24,13 @@
   "homepage": "https://github.com/Wildhoney/Hylian#readme",
   "devDependencies": {
     "ava": "^0.17.0",
+    "babel-loader": "^6.3.2",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-stage-3": "^6.22.0",
     "babel-register": "^6.22.0",
     "es6-symbol": "^3.1.0",
-    "ramda": "^0.23.0"
+    "ramda": "^0.23.0",
+    "webpack": "^2.2.1"
   },
   "ava": {
     "files": [
