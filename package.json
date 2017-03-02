@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Quick and easy doubly and singly linked list implementation that allows for insertion at the start, end, before and after, as well as removal.",
   "main": "dist/hylian.js",
+  "jsnext:main": "src/hylian.js",
   "scripts": {
     "build": "webpack",
     "test": "ava"
