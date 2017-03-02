@@ -68,23 +68,17 @@ const assert = (result, message) => !result && error(message);
 export const create = ({ data = defaults.data, type = defaults.type, index = defaults.index } = defaults) => {
 
     const options = { ...defaults, data, type };
+    const model = data[options.index];
+    const next = () => {};
+    const previous = () => {};
 
     // Process the array of assertions for the sake of developer sanity.
     assert(Array.isArray(options.data), `'option.data' should be an array`);
     assert(isSingle(options) || isDouble(options), `'option.type' should be 'type.singly' or 'type.doubly'`);
 
-    /**
-     * @method traverse
-     * @param {Number} direction
-     * @return {Function}
-     */
-    const traverse = direction => {
-        return () => {};
-    };
-
-    // Define the interface for the developer, and then remove the "previous" function if we're using a singly-linked list.
-    const control = { data: data[options.index] || null, next: traverse(1), previous: traverse(-1), options };
-    return isSingle(options) ? omit(['previous'], control) : control;
+    // Define the controls, and then remove "previous" if the list is a singly-linked list.
+    const controls = { model, next, previous, options };
+    return isSingle(options) ? omit(['previous'], controls) : controls;
 
 };
 

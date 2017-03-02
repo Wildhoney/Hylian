@@ -1,5 +1,5 @@
 module.exports = {
-    entry: './src/hylian.js',
+    entry: ['babel-polyfill', './src/hylian.js'],
     output: {
         filename: './dist/hylian.js',
         libraryTarget: 'commonjs2'
