@@ -1,0 +1,24 @@
+{
+  "name": "hylian",
+  "version": "0.1.0",
+  "description": "Quick and easy doubly and singly linked list implementation that allows for insertion at the start, end, before and after, as well as removal.",
+  "main": "dist/hylian.js",
+  "scripts": {
+    "test": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wildhoney/Hylian.git"
+  },
+  "keywords": [
+    "linked list",
+    "singly linked list",
+    "doubly linked list"
+  ],
+  "author": "Adam Timberlake <adam.timberlake@gmail.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Wildhoney/Hylian/issues"
+  },
+  "homepage": "https://github.com/Wildhoney/Hylian#readme"
+}
