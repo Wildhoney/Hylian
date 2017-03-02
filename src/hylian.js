@@ -83,7 +83,7 @@ export const create = ({ data = defaults.data, type = defaults.type, index = def
     };
 
     // Define the interface for the developer, and then remove the "previous" function if we're using a singly-linked list.
-    const control = { data: data[options.index] || null, next: traverse(+1), previous: traverse(-1), options };
+    const control = { data: data[options.index] || null, next: traverse(1), previous: traverse(-1), options };
     return isSingle(options) ? omit(['previous'], control) : control;
 
 };
