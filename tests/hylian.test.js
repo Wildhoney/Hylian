@@ -16,18 +16,12 @@ test('it should exclude the "previous" function when singly-linked', t => {
     t.false(typeof list.previous === 'function');
 });
 
-test('it should be able to traverse forwards;', t => {
+test('it should be able to traverse using next and previous;', t => {
     const data = [1, 2, 3, 4, 5];
     const list = create(data);
-    t.is(list.data(), 1);
-    t.is(list.next().data(), 2);
-    t.is(list.next().next().data(), 3);
-});
-
-test('it should be able to traverse backwards;', t => {
-    const data = [1, 2, 3, 4, 5];
-    const list = create(data, { index: 4 });
-    t.is(list.data(), 5);
-    t.is(list.previous().data(), 4);
-    t.is(list.previous().previous().data(), 3);
+    t.is(list.data, 1);
+    t.is(list.next().data, 2);
+    t.is(list.next().next().data, 3);
+    t.is(list.next().previous().data, 1);
+    t.is(list.next().next().next().next().previous().data, 4);
 });

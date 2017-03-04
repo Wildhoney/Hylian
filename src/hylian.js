@@ -77,9 +77,9 @@ export const create = (data = [], options = defaultOptions) => {
          * @type {Object}
          */
         const control = {
-            data:     (at = index) => data[at],
-            next:     ()           => nextState(data, index + 1).next().value,
-            previous: ()           => nextState(data, index - 1).next().value,
+            data:           data[index],
+            next:     () => nextState(data, index + 1).next().value,
+            previous: () => nextState(data, index - 1).next().value,
         };
 
         // Remove the previous function if it's a singly-linked list.
