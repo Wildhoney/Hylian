@@ -9,37 +9,36 @@ import { omit } from 'ramda';
 const symbolFor = name => Symbol(`hylian/${name}`);
 
 /**
- * @constant types
+ * @constant listType
  * @type {{single: Symbol, double: Symbol}}
  */
-export const types = {
+export const listType = {
     single: symbolFor('singly-linked-list'),
     double: symbolFor('doubly-linked-list')
 };
 
 /**
- * @constant defaults
+ * @constant defaultOptions
  * @type {{data: Array, type: Symbol}}
  */
-const defaults = {
-    data: [],
-    type: types.double,
+const defaultOptions = {
+    type: listType.double,
     index: 0
 };
 
 /**
  * @method isSingle
- * @param {Object} options
+ * @param {Symbol} type
  * @return {Boolean}
  */
-const isSingle = options => options.type === types.single;
+const isSingle = type => type === listType.single;
 
 /**
  * @method isDouble
- * @param {Object} options
+ * @param {Symbol} type
  * @return {Boolean}
  */
-const isDouble = options => options.type === types.double;
+const isDouble = type => type === listType.double;
 
 /**
  * @method error
@@ -60,26 +59,49 @@ const assert = (result, message) => !result && error(message);
 
 /**
  * @method create
- * @param {Array} [data = defaults.data]
- * @param {Symbol} [type = defaults.type]
- * @param {Number} [index = defaults.type]
+ * @param {Array} [data = []]
+ * @param {Object} options
  * @return {Object}
  */
-export const create = ({ data = defaults.data, type = defaults.type, index = defaults.index } = defaults) => {
+export const create = (data = [], options = defaultOptions) => {
 
-    const options = { ...defaults, data, type };
-    const model = data[options.index];
-    const next = () => {};
-    const previous = () => {};
+    const opts = { ...defaultOptions, ...options };
 
     // Process the array of assertions for the sake of developer sanity.
-    assert(Array.isArray(options.data), `'option.data' should be an array`);
-    assert(isSingle(options) || isDouble(options), `'option.type' should be 'type.singly' or 'type.doubly'`);
+    assert(Array.isArray(data), `'option.data' should be an array`);
+    assert(isSingle(opts.type) || isDouble(opts.type), `'option.type' should be 'type.singly' or 'type.doubly'`);
 
-    // Define the controls, and then remove "previous" if the list is a singly-linked list.
-    const controls = { model, next, previous, options };
-    return isSingle(options) ? omit(['previous'], controls) : controls;
+    /**
+     * @method nextState
+     * @return {Array} data
+     * @return {Number} index
+     * @return {Object}
+     */
+    function *nextState(data, index) {
+
+        const state = (() => {
+
+            /**
+             * @constant control
+             * @type {Object}
+             */
+            const control = {
+                data:     (at = index) => data[at],
+                next:     ()           => nextState(data, index + 1).next().value,
+                previous: ()           => nextState(data, index - 1).next().value,
+            };
+
+            // Remove the previous function if it's a singly-linked list.
+            return isSingle(opts.type) ? omit(['previous'], control) : control;
+
+        })();
+
+        yield state;
+
+    }
+
+    return nextState(data, opts.index).next().value;
 
 };
 
-export default { create, types };
+export default { create, listType };
