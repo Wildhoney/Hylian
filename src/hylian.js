@@ -2,19 +2,12 @@ import Symbol   from 'es6-symbol';
 import { omit } from 'ramda';
 
 /**
- * @constant symbolFor
- * @param {String} name
- * @return {Symbol}
- */
-const symbolFor = name => Symbol(`hylian/${name}`);
-
-/**
  * @constant listType
  * @type {{single: Symbol, double: Symbol}}
  */
 export const listType = {
-    single: symbolFor('singly-linked-list'),
-    double: symbolFor('doubly-linked-list')
+    single: Symbol('hylian/singly-linked'),
+    double: Symbol('hylian/doubly-linked')
 };
 
 /**
