@@ -1,4 +1,4 @@
-import Symbol from 'es6-symbol';
+import Symbol   from 'es6-symbol';
 import { omit } from 'ramda';
 
 /**
@@ -79,24 +79,18 @@ export const create = (data = [], options = defaultOptions) => {
      */
     function *nextState(data, index) {
 
-        const state = (() => {
+        /**
+         * @constant control
+         * @type {Object}
+         */
+        const control = {
+            data:     (at = index) => data[at],
+            next:     ()           => nextState(data, index + 1).next().value,
+            previous: ()           => nextState(data, index - 1).next().value,
+        };
 
-            /**
-             * @constant control
-             * @type {Object}
-             */
-            const control = {
-                data:     (at = index) => data[at],
-                next:     ()           => nextState(data, index + 1).next().value,
-                previous: ()           => nextState(data, index - 1).next().value,
-            };
-
-            // Remove the previous function if it's a singly-linked list.
-            return isSingle(opts.type) ? omit(['previous'], control) : control;
-
-        })();
-
-        yield state;
+        // Remove the previous function if it's a singly-linked list.
+        yield isSingle(opts.type) ? omit(['previous'], control) : control;
 
     }
 
