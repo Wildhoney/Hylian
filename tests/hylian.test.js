@@ -68,15 +68,31 @@ test('it should be able to traverse infinitely using next and previous;', t => {
 
 });
 
+test('it should be able to insert a node;', t => {
+
+    const a = create([1, 2, 3, 4, 5]);
+    const b = a.add(6);
+    const c = b.add(7, 8, 9);
+
+    t.is(a.size(), 5);
+    t.is(b.size(), 6);
+    t.is(c.size(), 9);
+    t.is(b.data, 1);
+
+});
+
 test('it should be able to remove a node from the list;', t => {
-    const data = [1, 2, 3, 4, 5];
-    const a    = create(data);
-    const b    = a.delete();
-    const c    = b.delete().delete().delete().delete();
+
+    const a = create([1, 2, 3, 4, 5]);
+    const b = a.delete();
+    const c = b.delete().delete().delete().delete();
+
     t.is(a.size(), 5);
     t.is(a.data, 1);
     t.is(b.size(), 4);
     t.is(b.data, 2);
+    t.is(b.data, 2);
     t.true(c.empty());
     t.true(typeof c.delete !== 'function');
+
 });

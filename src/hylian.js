@@ -93,14 +93,15 @@ export const create = (data = [empty], options = defaultOptions) => {
          * @type {Object}
          */
         const control = {
-            data:           data[index],
-            start:          toStart,
-            end:            toEnd,
-            empty:    () => isEmpty,
-            size:     () => data.length,
-            next:     () => isEnd   ? toStart() : nextState(data, index + 1).next().value,
-            previous: () => isStart ? toEnd()   : nextState(data, index - 1).next().value,
-            delete:   () => nextState(data.filter((_, currentIndex) => currentIndex !== index), index).next().value
+            data:                  data[index],
+            start:                 toStart,
+            end:                   toEnd,
+            empty:    ()        => isEmpty,
+            size:     ()        => data.length,
+            next:     ()        => isEnd   ? toStart() : nextState(data, index + 1).next().value,
+            previous: ()        => isStart ? toEnd()   : nextState(data, index - 1).next().value,
+            delete:   ()        => nextState(data.filter((_, currentIndex) => currentIndex !== index), index).next().value,
+            add:      (...args) => nextState([...data, ...args], index).next().value
         };
 
         switch (true) {
