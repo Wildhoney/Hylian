@@ -59,17 +59,17 @@ const assert = (result, message) => !result && error(message);
 
 /**
  * @method create
- * @param {Array} [data = [empty]]
+ * @param {Array} [xs = [empty]]
  * @param {Object} options
  * @return {Object}
  */
-export const create = (data = [empty], options = defaultOptions) => {
+export const create = (xs = [empty], options = defaultOptions) => {
 
+    const data = xs && xs.length > 0 ? xs : [empty];
     const opts = { ...defaultOptions, ...options };
 
     // Process the array of assertions for the sake of developer sanity.
-    assert(data.length !== 0,                          `'option.data' should contain at least one item`);
-    assert(Array.isArray(data),                        `'option.data' should be an array`);
+    assert(Array.isArray(xs),                        `'option.data' should be an array`);
     assert(isSingle(opts.type) || isDouble(opts.type), `'option.type' should be 'type.singly' or 'type.doubly'`);
 
     /**
@@ -98,9 +98,9 @@ export const create = (data = [empty], options = defaultOptions) => {
          * @type {Object}
          */
         const control = {
-            data:           datum,
             start,
             end,
+            data:           datum,
             empty:    () => isEmpty,
             size:     () => data.length,
             next:     () => isEnd   ? start() : next(data, index + 1),
