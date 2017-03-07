@@ -73,12 +73,12 @@ export const create = (data = [empty], options = defaultOptions) => {
     assert(isSingle(opts.type) || isDouble(opts.type), `'option.type' should be 'type.singly' or 'type.doubly'`);
 
     /**
-     * @method nextState
+     * @method next
      * @return {Array} xs
      * @return {Number} index
      * @return {Object}
      */
-    function nextState(xs, index) {
+    function next(xs, index) {
 
         const data    = xs.length > 0 ? [...xs] : [empty];
         const datum   = data[index];
@@ -86,13 +86,12 @@ export const create = (data = [empty], options = defaultOptions) => {
         const isEnd   = index === (data.length - 1);
         const isEmpty = datum === empty;
 
-        const toStart = () => nextState(data, 0);
-        const toEnd   = () => nextState(data, data.length - 1);
-
-        const before    = x  => data.filter((_, index) => x > index);
-        const after     = x  => data.filter((_, index) => x < index);
-        const without   = x  => data.filter((_, index) => x !== index);
-        const unchanged = () => nextState(data, index);
+        const start   = () => next(data, 0);
+        const end     = () => next(data, data.length - 1);
+        const before  = x  => data.filter((_, index) => x > index);
+        const after   = x  => data.filter((_, index) => x < index);
+        const same    = () => next(data, index);
+        const without = x  => data.filter((_, index) => x !== index);
 
         /**
          * @constant control
@@ -100,22 +99,22 @@ export const create = (data = [empty], options = defaultOptions) => {
          */
         const control = {
             data:           datum,
-            start:          toStart,
-            end:            toEnd,
+            start,
+            end,
             empty:    () => isEmpty,
             size:     () => data.length,
-            next:     () => isEnd   ? toStart() : nextState(data, index + 1),
-            previous: () => isStart ? toEnd()   : nextState(data, index - 1),
+            next:     () => isEnd   ? start() : next(data, index + 1),
+            previous: () => isStart ? end()   : next(data, index - 1),
             remove:   {
-                before:   () => isStart ? unchanged() : nextState(without(index - 1), index - 1),
-                current:  () => nextState(without(index), index),
-                after:    () => isEnd ? unchanged() : nextState(without(index + 1), index)
+                before:   () => isStart ? same() : next(without(index - 1), index - 1),
+                current:  () => next(without(index), index),
+                after:    () => isEnd ? same() : next(without(index + 1), index)
             },
             insert:   {
-                start:  (...xs) => nextState([...xs, ...data], index + xs.length),
-                before: (...xs) => nextState([...before(index), ...xs, datum, ...after(index)], index + xs.length),
-                after:  (...xs) => nextState([...before(index), datum, ...xs, ...after(index)], index),
-                end:    (...xs) => nextState([...data, ...xs], index),
+                start:  (...xs) => next([...xs, ...data], index + xs.length),
+                before: (...xs) => next([...before(index), ...xs, datum, ...after(index)], index + xs.length),
+                after:  (...xs) => next([...before(index), datum, ...xs, ...after(index)], index),
+                end:    (...xs) => next([...data, ...xs], index),
             }
         };
 
@@ -140,7 +139,7 @@ export const create = (data = [empty], options = defaultOptions) => {
 
     }
 
-    return nextState(data, opts.index);
+    return next(data, opts.index);
 
 };
 
