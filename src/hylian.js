@@ -89,23 +89,28 @@ export const create = (data = [empty], options = defaultOptions) => {
         const toStart = () => nextState(data, 0).next().value;
         const toEnd   = () => nextState(data, data.length - 1).next().value;
 
-        const before  = a => data.filter((_, index) => a > index);
-        const after   = a => data.filter((_, index) => a < index);
-        const without = a => data.filter((_, index) => a !== index);
+        const before    = a  => data.filter((_, index) => a > index);
+        const after     = a  => data.filter((_, index) => a < index);
+        const without   = a  => data.filter((_, index) => a !== index);
+        const unchanged = () => nextState(data, index).next().value;
 
         /**
          * @constant control
          * @type {Object}
          */
         const control = {
-            data:                  datum,
-            start:                 toStart,
-            end:                   toEnd,
-            empty:    ()        => isEmpty,
-            size:     ()        => data.length,
-            next:     ()        => isEnd   ? toStart() : nextState(data, index + 1).next().value,
-            previous: ()        => isStart ? toEnd()   : nextState(data, index - 1).next().value,
-            remove:   ()        => nextState(without(index), index).next().value,
+            data:           datum,
+            start:          toStart,
+            end:            toEnd,
+            empty:    () => isEmpty,
+            size:     () => data.length,
+            next:     () => isEnd   ? toStart() : nextState(data, index + 1).next().value,
+            previous: () => isStart ? toEnd()   : nextState(data, index - 1).next().value,
+            remove:   {
+                before:   () => isStart ? unchanged() : nextState(without(index - 1), index - 1).next().value,
+                current:  () => nextState(without(index), index).next().value,
+                after:    () => isEnd ? unchanged() : nextState(without(index + 1), index).next().value
+            },
             insert:   {
                 start:  (...args) => nextState([...args, ...data], index + args.length).next().value,
                 before: (...args) => nextState([...before(index), ...args, datum, ...after(index)], index + args.length).next().value,

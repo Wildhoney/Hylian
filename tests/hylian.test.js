@@ -40,6 +40,10 @@ test('it should be able to determine when the list is empty;', t => {
     t.false(create([1, 2, 3]).empty());
 });
 
+test('it should not be able to remove from an empty list;', t => {
+    t.true(typeof create().delete !== 'function');
+});
+
 test('it should be able to traverse to the start and the end;', t => {
     const a = create([1, 2, 3, 4, 5]);
     const b = a.end();
@@ -90,7 +94,7 @@ test('it should be able to insert nodes at the end;', t => {
     t.is(c.next().next().next().data, 4);
 });
 
-test('it should be able to insert nodes before the current;', t => {
+test('it should be able to insert nodes before the current node;', t => {
     const a = create([1, 2, 6, 7, 8]);
     const b = a.next().next();
     const c = b.insert.before(5).previous();
@@ -103,7 +107,7 @@ test('it should be able to insert nodes before the current;', t => {
     t.is(d.size(), 8);
 });
 
-test('it should be able to insert nodes after the current;', t => {
+test('it should be able to insert nodes after the current node;', t => {
     const a = create([1, 2, 6, 7, 8]);
     const b = a.next();
     const c = b.insert.after(3);
@@ -116,18 +120,37 @@ test('it should be able to insert nodes after the current;', t => {
     t.is(d.size(), 8);
 });
 
-test('it should be able to remove a node from the list;', t => {
-
+test('it should be able to remove the current node;', t => {
     const a = create([1, 2, 3, 4, 5]);
-    const b = a.remove();
-    const c = b.remove().remove().remove().remove();
-
-    t.is(a.size(), 5);
+    const b = a.remove.current();
+    const c = b.next().next().remove.current();
     t.is(a.data, 1);
+    t.is(a.size(), 5);
+    t.is(b.data, 2);
     t.is(b.size(), 4);
-    t.is(b.data, 2);
-    t.is(b.data, 2);
-    t.true(c.empty());
-    t.true(typeof c.remove !== 'function');
+    t.is(c.data, 5);
+    t.is(c.size(), 3);
+});
 
+test('it should be able to remove before the current node;', t => {
+    const a = create([1, 2, 3, 4, 5]);
+    const b = a.remove.before();
+    const c = a.next().next().remove.before();
+    t.is(a.data, 1);
+    t.is(b.data, 1);
+    t.is(b.size(), 5);
+    t.is(c.data, 3);
+    t.is(c.size(), 4);
+});
+
+test('it should be able to remove after the current node;', t => {
+    const a = create([1, 2, 3, 4, 5]);
+    const b = a.remove.after();
+    const c = b.end().remove.after();
+    t.is(a.data, 1);
+    t.is(b.data, 1);
+    t.is(b.size(), 4);
+    t.is(c.size(), 4);
+    t.is(c.data, 5);
+    t.is(c.size(), 4);
 });
