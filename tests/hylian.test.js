@@ -43,6 +43,10 @@ test('it should not be able to remove from an empty list;', t => {
     t.true(typeof create().delete !== 'function');
 });
 
+test('it should be able to clear the list;', t => {
+    t.true(create([1, 2, 3, 4, 5]).clear().empty());
+});
+
 test('it should be able to traverse to the start and the end;', t => {
 
     const a = create([1, 2, 3, 4, 5]);
@@ -177,3 +181,9 @@ test('it should be able to remove after the current node;', t => {
     t.is(c.size(), 4);
 
 });
+
+// test('it should be able to combine all of the functions;', t => {
+//
+//     const a = create([1, 2, 3, 4, 5]);
+//
+// });

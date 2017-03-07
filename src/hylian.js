@@ -69,7 +69,7 @@ export const create = (xs = [empty], options = defaultOptions) => {
     const opts = { ...defaultOptions, ...options };
 
     // Process the array of assertions for the sake of developer sanity.
-    assert(Array.isArray(xs),                        `'option.data' should be an array`);
+    assert(Array.isArray(xs),                          `'option.data' should be an array`);
     assert(isSingle(opts.type) || isDouble(opts.type), `'option.type' should be 'type.singly' or 'type.doubly'`);
 
     /**
@@ -101,6 +101,7 @@ export const create = (xs = [empty], options = defaultOptions) => {
             start,
             end,
             data:           datum,
+            clear:    () => next([empty], 0),
             empty:    () => isEmpty,
             size:     () => data.length,
             next:     () => isEnd   ? start() : next(data, index + 1),
