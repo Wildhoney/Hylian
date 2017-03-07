@@ -7523,20 +7523,20 @@ var assert = function assert(result, message) {
 
 /**
  * @method create
- * @param {Array} [data = [empty]]
+ * @param {Array} [xs = [empty]]
  * @param {Object} options
  * @return {Object}
  */
 var create = exports.create = function create() {
-  var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [empty];
+  var xs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [empty];
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultOptions;
 
 
+  var data = xs && xs.length > 0 ? xs : [empty];
   var opts = _extends({}, defaultOptions, options);
 
   // Process the array of assertions for the sake of developer sanity.
-  assert(data.length !== 0, '\'option.data\' should contain at least one item');
-  assert(Array.isArray(data), '\'option.data\' should be an array');
+  assert(Array.isArray(xs), '\'option.data\' should be an array');
   assert(isSingle(opts.type) || isDouble(opts.type), '\'option.type\' should be \'type.singly\' or \'type.doubly\'');
 
   /**
@@ -7579,18 +7579,56 @@ var create = exports.create = function create() {
     };
 
     /**
+     * @constant start
+     * @type {Object}
+     */
+    var insert = {
+      start: function start() {
+        for (var _len = arguments.length, xs = Array(_len), _key = 0; _key < _len; _key++) {
+          xs[_key] = arguments[_key];
+        }
+
+        return isEmpty ? _next(xs, 0) : _next([].concat(xs, _toConsumableArray(data)), index + xs.length);
+      },
+      before: function before() {
+        for (var _len2 = arguments.length, xs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          xs[_key2] = arguments[_key2];
+        }
+
+        return isEmpty ? _next(xs, 0) : _next([].concat(_toConsumableArray(_before(index)), xs, [datum], _toConsumableArray(_after(index))), index + xs.length);
+      },
+      after: function after() {
+        for (var _len3 = arguments.length, xs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+          xs[_key3] = arguments[_key3];
+        }
+
+        return isEmpty ? _next(xs, 0) : _next([].concat(_toConsumableArray(_before(index)), [datum], xs, _toConsumableArray(_after(index))), index);
+      },
+      end: function end() {
+        for (var _len4 = arguments.length, xs = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+          xs[_key4] = arguments[_key4];
+        }
+
+        return isEmpty ? _next(xs, 0) : _next([].concat(_toConsumableArray(data), xs), index);
+      }
+    };
+
+    /**
      * @constant control
      * @type {Object}
      */
     var control = {
-      data: datum,
       start: start,
       end: end,
+      data: datum,
+      clear: function clear() {
+        return _next([empty], 0);
+      },
       empty: function empty() {
         return isEmpty;
       },
       size: function size() {
-        return data.length;
+        return isEmpty ? 0 : data.length;
       },
       next: function next() {
         return isEnd ? start() : _next(data, index + 1);
@@ -7598,6 +7636,7 @@ var create = exports.create = function create() {
       previous: function previous() {
         return isStart ? end() : _next(data, index - 1);
       },
+      insert: isEmpty ? (0, _ramda.omit)(['before', 'after'], insert) : insert,
       remove: {
         before: function before() {
           return isStart ? same() : _next(without(index - 1), index - 1);
@@ -7608,36 +7647,6 @@ var create = exports.create = function create() {
         after: function after() {
           return isEnd ? same() : _next(without(index + 1), index);
         }
-      },
-      insert: {
-        start: function start() {
-          for (var _len = arguments.length, xs = Array(_len), _key = 0; _key < _len; _key++) {
-            xs[_key] = arguments[_key];
-          }
-
-          return _next([].concat(xs, _toConsumableArray(data)), index + xs.length);
-        },
-        before: function before() {
-          for (var _len2 = arguments.length, xs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            xs[_key2] = arguments[_key2];
-          }
-
-          return _next([].concat(_toConsumableArray(_before(index)), xs, [datum], _toConsumableArray(_after(index))), index + xs.length);
-        },
-        after: function after() {
-          for (var _len3 = arguments.length, xs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-            xs[_key3] = arguments[_key3];
-          }
-
-          return _next([].concat(_toConsumableArray(_before(index)), [datum], xs, _toConsumableArray(_after(index))), index);
-        },
-        end: function end() {
-          for (var _len4 = arguments.length, xs = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-            xs[_key4] = arguments[_key4];
-          }
-
-          return _next([].concat(_toConsumableArray(data), xs), index);
-        }
       }
     };
 
@@ -7645,19 +7654,19 @@ var create = exports.create = function create() {
 
       // Determine if the list is empty.
       case isEmpty:
-        return (0, _ramda.omit)(['remove'], control);break;
+        return (0, _ramda.omit)(['remove'], control);
 
       // Determine if it's a singly-linked list.
       case isSingle(opts.type):
-        return (0, _ramda.omit)(['previous', 'start', 'end'], control);break;
+        return (0, _ramda.omit)(['previous', 'start', 'end'], control);
 
       // Determine if we're at the start of a finite list.
       case opts.finite && isStart:
-        return (0, _ramda.omit)(['previous'], control);break;
+        return (0, _ramda.omit)(['previous'], control);
 
       // Determine if we're at the end of a finite list.
       case opts.finite && isEnd:
-        return (0, _ramda.omit)(['next'], control);break;
+        return (0, _ramda.omit)(['next'], control);
 
       // Otherwise we'll return the full controls.
       default:
@@ -7669,7 +7678,7 @@ var create = exports.create = function create() {
   return _next(data, opts.index);
 };
 
-exports.default = { create: create, listType: listType };
+exports.default = create;
 
 /***/ }),
 /* 229 */

@@ -128,16 +128,16 @@ export const create = (xs = [empty], options = defaultOptions) => {
         switch (true) {
 
             // Determine if the list is empty.
-            case isEmpty:                return omit(['remove'], control); break;
+            case isEmpty:                return omit(['remove'], control);
 
             // Determine if it's a singly-linked list.
-            case isSingle(opts.type):    return omit(['previous', 'start', 'end'], control); break;
+            case isSingle(opts.type):    return omit(['previous', 'start', 'end'], control);
 
             // Determine if we're at the start of a finite list.
-            case opts.finite && isStart: return omit(['previous'], control); break;
+            case opts.finite && isStart: return omit(['previous'], control);
 
             // Determine if we're at the end of a finite list.
-            case opts.finite && isEnd:   return omit(['next'], control); break;
+            case opts.finite && isEnd:   return omit(['next'], control);
 
             // Otherwise we'll return the full controls.
             default:                     return control;
