@@ -100,14 +100,17 @@ export const create = (data = [empty], options = defaultOptions) => {
             size:     ()        => data.length,
             next:     ()        => isEnd   ? toStart() : nextState(data, index + 1).next().value,
             previous: ()        => isStart ? toEnd()   : nextState(data, index - 1).next().value,
-            delete:   ()        => nextState(data.filter((_, currentIndex) => currentIndex !== index), index).next().value,
-            add:      (...args) => nextState([...data, ...args], index).next().value
+            remove:   ()        => nextState(data.filter((_, currentIndex) => currentIndex !== index), index).next().value,
+            insert:   {
+                start: (...args) => nextState([...args, ...data], index + args.length).next().value,
+                end:   (...args) => nextState([...data, ...args], index).next().value,
+            }
         };
 
         switch (true) {
 
             // Determine if the list is empty.
-            case isEmpty:                yield omit(['delete'], control); break;
+            case isEmpty:                yield omit(['remove'], control); break;
 
             // Determine if it's a singly-linked list.
             case isSingle(opts.type):    yield omit(['previous', 'start', 'end'], control); break;
