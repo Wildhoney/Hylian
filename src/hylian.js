@@ -76,28 +76,35 @@ export const create = (data = [], options = defaultOptions) => {
         const isStart = index === 0;
         const isEnd   = index === (data.length - 1);
 
+        const toStart = () => nextState(data, 0).next().value;
+        const toEnd   = () => nextState(data, data.length - 1).next().value;
+
         /**
          * @constant control
          * @type {Object}
          */
         const control = {
-            data:           isEnd ? data[0] : data[index],
-            next:     () => isEnd ? nextState(data, 0).next().value : nextState(data, index + 1).next().value,
-            previous: () => nextState(data, index - 1).next().value,
+            data:           data[index],
+            empty:    () => data.length === 0,
+            start:          toStart,
+            end:            toEnd,
+            next:     () => isEnd   ? toStart() : nextState(data, index + 1).next().value,
+            previous: () => isStart ? toEnd()   : nextState(data, index - 1).next().value,
         };
 
         switch (true) {
 
-            // Determine if it's a singly-linked list, or we're at the start of a finite list.
-            case isSingle(opts.type) || (opts.finite && isStart):
-                yield omit(['previous'], control); break;
+            // Determine if it's a singly-linked list.
+            case isSingle(opts.type):    yield omit(['previous', 'start', 'end'], control); break;
+
+            // Determine if we're at the start of a finite list.
+            case opts.finite && isStart: yield omit(['previous'], control); break;
 
             // Determine if we're at the end of a finite list.
-            case opts.finite && isEnd:
-                yield omit(['next'], control); break;
+            case opts.finite && isEnd:   yield omit(['next'], control); break;
 
-            default:
-                yield control;
+            // Otherwise we'll yield the full controls.
+            default:                     yield control;
 
         }
 
