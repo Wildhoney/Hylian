@@ -17,7 +17,7 @@ export const listType = {
 const defaultOptions = {
     type: listType.double,
     index: 0,
-    infinite: true
+    finite: false
 };
 
 /**
@@ -74,7 +74,7 @@ export const create = (data = [], options = defaultOptions) => {
     function *nextState(data, index) {
 
         const isStart = index === 0;
-        const isEnd   = index === data.length;
+        const isEnd   = index === (data.length - 1);
 
         /**
          * @constant control
@@ -82,12 +82,24 @@ export const create = (data = [], options = defaultOptions) => {
          */
         const control = {
             data:           isEnd ? data[0] : data[index],
-            next:     () => isEnd ? nextState(data, 1).next().value : nextState(data, index + 1).next().value,
+            next:     () => isEnd ? nextState(data, 0).next().value : nextState(data, index + 1).next().value,
             previous: () => nextState(data, index - 1).next().value,
         };
 
-        // Remove the previous function if it's a singly-linked list.
-        yield isSingle(opts.type) ? omit(['previous'], control) : control;
+        switch (true) {
+
+            // Determine if it's a singly-linked list, or we're at the start of a finite list.
+            case isSingle(opts.type) || (opts.finite && isStart):
+                yield omit(['previous'], control); break;
+
+            // Determine if we're at the end of a finite list.
+            case opts.finite && isEnd:
+                yield omit(['next'], control); break;
+
+            default:
+                yield control;
+
+        }
 
     }
 

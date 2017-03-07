@@ -16,13 +16,33 @@ test('it should exclude the "previous" function when singly-linked', t => {
     t.false(typeof list.previous === 'function');
 });
 
-test('it should be able to traverse using next and previous;', t => {
+test('it should be able to remove "next" and "previous" when traversing finitely;', t => {
+
     const data = [1, 2, 3, 4, 5];
-    const list = create(data);
-    t.is(list.data, 1);
-    t.is(list.next().data, 2);
-    t.is(list.next().next().data, 3);
-    t.is(list.next().previous().data, 1);
-    t.is(list.next().next().next().next().previous().data, 4);
-    t.is(list.next().next().next().next().next().data, 1);
+    const a    = create(data, { finite: true });
+    const b    = a.next().next().next().next();
+    const c    = create(data, { finite: true });
+
+    t.is(typeof b.next, 'undefined');
+    t.is(typeof c.previous, 'undefined');
+
+});
+
+test('it should be able to traverse infinitely using next and previous;', t => {
+
+    const data = [1, 2, 3, 4, 5];
+    const a    = create(data);
+    const b    = a.next();
+    const c    = b.next();
+    const d    = c.next();
+    const e    = d.previous();
+    const f    = e.next().next().next();
+
+    t.is(a.data, 1);
+    t.is(b.data, 2);
+    t.is(c.data, 3);
+    t.is(d.data, 4);
+    t.is(e.data, 3);
+    t.is(f.data, 1);
+
 });
