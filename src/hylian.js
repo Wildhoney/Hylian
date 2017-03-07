@@ -16,7 +16,8 @@ export const listType = {
  */
 const defaultOptions = {
     type: listType.double,
-    index: 0
+    index: 0,
+    infinite: true
 };
 
 /**
@@ -61,7 +62,7 @@ export const create = (data = [], options = defaultOptions) => {
     const opts = { ...defaultOptions, ...options };
 
     // Process the array of assertions for the sake of developer sanity.
-    assert(Array.isArray(data), `'option.data' should be an array`);
+    assert(Array.isArray(data),                        `'option.data' should be an array`);
     assert(isSingle(opts.type) || isDouble(opts.type), `'option.type' should be 'type.singly' or 'type.doubly'`);
 
     /**
@@ -72,13 +73,16 @@ export const create = (data = [], options = defaultOptions) => {
      */
     function *nextState(data, index) {
 
+        const isStart = index === 0;
+        const isEnd   = index === data.length;
+
         /**
          * @constant control
          * @type {Object}
          */
         const control = {
-            data:           data[index],
-            next:     () => nextState(data, index + 1).next().value,
+            data:           isEnd ? data[0] : data[index],
+            next:     () => isEnd ? nextState(data, 1).next().value : nextState(data, index + 1).next().value,
             previous: () => nextState(data, index - 1).next().value,
         };
 

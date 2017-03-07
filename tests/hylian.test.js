@@ -24,4 +24,5 @@ test('it should be able to traverse using next and previous;', t => {
     t.is(list.next().next().data, 3);
     t.is(list.next().previous().data, 1);
     t.is(list.next().next().next().next().previous().data, 4);
+    t.is(list.next().next().next().next().next().data, 1);
 });
