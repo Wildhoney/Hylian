@@ -81,6 +81,7 @@ export const create = (data = [empty], options = defaultOptions) => {
     function *nextState(items, index) {
 
         const data    = items.length > 0 ? [...items] : [empty];
+        const datum   = data[index];
         const isStart = index === 0;
         const isEnd   = index === (data.length - 1);
         const isEmpty = data[0] === empty;
@@ -88,22 +89,28 @@ export const create = (data = [empty], options = defaultOptions) => {
         const toStart = () => nextState(data, 0).next().value;
         const toEnd   = () => nextState(data, data.length - 1).next().value;
 
+        const before  = a => data.filter((_, index) => a > index);
+        const after   = a => data.filter((_, index) => a < index);
+        const without = a => data.filter((_, index) => a !== index);
+
         /**
          * @constant control
          * @type {Object}
          */
         const control = {
-            data:                  data[index],
+            data:                  datum,
             start:                 toStart,
             end:                   toEnd,
             empty:    ()        => isEmpty,
             size:     ()        => data.length,
             next:     ()        => isEnd   ? toStart() : nextState(data, index + 1).next().value,
             previous: ()        => isStart ? toEnd()   : nextState(data, index - 1).next().value,
-            remove:   ()        => nextState(data.filter((_, currentIndex) => currentIndex !== index), index).next().value,
+            remove:   ()        => nextState(without(index), index).next().value,
             insert:   {
-                start: (...args) => nextState([...args, ...data], index + args.length).next().value,
-                end:   (...args) => nextState([...data, ...args], index).next().value,
+                start:  (...args) => nextState([...args, ...data], index + args.length).next().value,
+                before: (...args) => nextState([...before(index), ...args, datum, ...after(index)], index + args.length).next().value,
+                after:  (...args) => nextState([...before(index), datum, ...args, ...after(index)], index).next().value,
+                end:    (...args) => nextState([...data, ...args], index).next().value,
             }
         };
 

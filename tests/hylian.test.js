@@ -73,6 +73,8 @@ test('it should be able to insert nodes at the start;', t => {
     const b = a.insert.start(3);
     const c = b.insert.start(1, 2);
     t.is(a.data, 4);
+    t.is(b.data, 4);
+    t.is(c.data, 4);
     t.is(b.previous().data, 3);
     t.is(c.previous().previous().data, 2);
     t.is(c.previous().previous().previous().data, 1);
@@ -86,6 +88,32 @@ test('it should be able to insert nodes at the end;', t => {
     t.is(b.next().data, 2);
     t.is(c.next().next().data, 3);
     t.is(c.next().next().next().data, 4);
+});
+
+test('it should be able to insert nodes before the current;', t => {
+    const a = create([1, 2, 6, 7, 8]);
+    const b = a.next().next();
+    const c = b.insert.before(5).previous();
+    const d = c.insert.before(3, 4);
+    t.is(a.data, 1);
+    t.is(b.data, 6);
+    t.is(c.data, 5);
+    t.is(c.previous().data, 2);
+    t.is(c.previous().previous().previous().data, 8);
+    t.is(d.size(), 8);
+});
+
+test('it should be able to insert nodes after the current;', t => {
+    const a = create([1, 2, 6, 7, 8]);
+    const b = a.next();
+    const c = b.insert.after(3);
+    const d = c.insert.after(4, 5);
+    t.is(a.data, 1);
+    t.is(b.data, 2);
+    t.is(c.data, 2);
+    t.is(c.previous().data, 1);
+    t.is(c.previous().previous().data, 8);
+    t.is(d.size(), 8);
 });
 
 test('it should be able to remove a node from the list;', t => {
