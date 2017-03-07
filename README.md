@@ -7,7 +7,7 @@
 
 ![Travis](http://img.shields.io/travis/Wildhoney/Hylian.svg?style=flat-square)
 &nbsp;
-![Coveralls](https://img.shields.io/coveralls/Wildhoney/Hylian.svg)
+![Coveralls](https://img.shields.io/coveralls/Wildhoney/Hylian.svg?style=flat-square)
 &nbsp;
 ![npm](http://img.shields.io/npm/v/hylian.svg?style=flat-square)
 &nbsp;
