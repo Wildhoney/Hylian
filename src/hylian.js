@@ -74,25 +74,25 @@ export const create = (data = [empty], options = defaultOptions) => {
 
     /**
      * @method nextState
-     * @return {Array} items
+     * @return {Array} xs
      * @return {Number} index
      * @return {Object}
      */
-    function *nextState(items, index) {
+    function nextState(xs, index) {
 
-        const data    = items.length > 0 ? [...items] : [empty];
+        const data    = xs.length > 0 ? [...xs] : [empty];
         const datum   = data[index];
         const isStart = index === 0;
         const isEnd   = index === (data.length - 1);
-        const isEmpty = data[0] === empty;
+        const isEmpty = datum === empty;
 
-        const toStart = () => nextState(data, 0).next().value;
-        const toEnd   = () => nextState(data, data.length - 1).next().value;
+        const toStart = () => nextState(data, 0);
+        const toEnd   = () => nextState(data, data.length - 1);
 
-        const before    = a  => data.filter((_, index) => a > index);
-        const after     = a  => data.filter((_, index) => a < index);
-        const without   = a  => data.filter((_, index) => a !== index);
-        const unchanged = () => nextState(data, index).next().value;
+        const before    = x  => data.filter((_, index) => x > index);
+        const after     = x  => data.filter((_, index) => x < index);
+        const without   = x  => data.filter((_, index) => x !== index);
+        const unchanged = () => nextState(data, index);
 
         /**
          * @constant control
@@ -104,43 +104,43 @@ export const create = (data = [empty], options = defaultOptions) => {
             end:            toEnd,
             empty:    () => isEmpty,
             size:     () => data.length,
-            next:     () => isEnd   ? toStart() : nextState(data, index + 1).next().value,
-            previous: () => isStart ? toEnd()   : nextState(data, index - 1).next().value,
+            next:     () => isEnd   ? toStart() : nextState(data, index + 1),
+            previous: () => isStart ? toEnd()   : nextState(data, index - 1),
             remove:   {
-                before:   () => isStart ? unchanged() : nextState(without(index - 1), index - 1).next().value,
-                current:  () => nextState(without(index), index).next().value,
-                after:    () => isEnd ? unchanged() : nextState(without(index + 1), index).next().value
+                before:   () => isStart ? unchanged() : nextState(without(index - 1), index - 1),
+                current:  () => nextState(without(index), index),
+                after:    () => isEnd ? unchanged() : nextState(without(index + 1), index)
             },
             insert:   {
-                start:  (...args) => nextState([...args, ...data], index + args.length).next().value,
-                before: (...args) => nextState([...before(index), ...args, datum, ...after(index)], index + args.length).next().value,
-                after:  (...args) => nextState([...before(index), datum, ...args, ...after(index)], index).next().value,
-                end:    (...args) => nextState([...data, ...args], index).next().value,
+                start:  (...xs) => nextState([...xs, ...data], index + xs.length),
+                before: (...xs) => nextState([...before(index), ...xs, datum, ...after(index)], index + xs.length),
+                after:  (...xs) => nextState([...before(index), datum, ...xs, ...after(index)], index),
+                end:    (...xs) => nextState([...data, ...xs], index),
             }
         };
 
         switch (true) {
 
             // Determine if the list is empty.
-            case isEmpty:                yield omit(['remove'], control); break;
+            case isEmpty:                return omit(['remove'], control); break;
 
             // Determine if it's a singly-linked list.
-            case isSingle(opts.type):    yield omit(['previous', 'start', 'end'], control); break;
+            case isSingle(opts.type):    return omit(['previous', 'start', 'end'], control); break;
 
             // Determine if we're at the start of a finite list.
-            case opts.finite && isStart: yield omit(['previous'], control); break;
+            case opts.finite && isStart: return omit(['previous'], control); break;
 
             // Determine if we're at the end of a finite list.
-            case opts.finite && isEnd:   yield omit(['next'], control); break;
+            case opts.finite && isEnd:   return omit(['next'], control); break;
 
-            // Otherwise we'll yield the full controls.
-            default:                     yield control;
+            // Otherwise we'll return the full controls.
+            default:                     return control;
 
         }
 
     }
 
-    return nextState(data, opts.index).next().value;
+    return nextState(data, opts.index);
 
 };
 
