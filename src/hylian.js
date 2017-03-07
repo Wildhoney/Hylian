@@ -11,6 +11,12 @@ export const listType = {
 };
 
 /**
+ * @constant empty
+ * @type {Symbol}
+ */
+const empty = Symbol('hylian/empty');
+
+/**
  * @constant defaultOptions
  * @type {{data: Array, type: Symbol}}
  */
@@ -53,28 +59,31 @@ const assert = (result, message) => !result && error(message);
 
 /**
  * @method create
- * @param {Array} [data = []]
+ * @param {Array} [data = [empty]]
  * @param {Object} options
  * @return {Object}
  */
-export const create = (data = [], options = defaultOptions) => {
+export const create = (data = [empty], options = defaultOptions) => {
 
     const opts = { ...defaultOptions, ...options };
 
     // Process the array of assertions for the sake of developer sanity.
+    assert(data.length !== 0,                          `'option.data' should contain at least one item`);
     assert(Array.isArray(data),                        `'option.data' should be an array`);
     assert(isSingle(opts.type) || isDouble(opts.type), `'option.type' should be 'type.singly' or 'type.doubly'`);
 
     /**
      * @method nextState
-     * @return {Array} data
+     * @return {Array} items
      * @return {Number} index
      * @return {Object}
      */
-    function *nextState(data, index) {
+    function *nextState(items, index) {
 
+        const data    = items.length > 0 ? [...items] : [empty];
         const isStart = index === 0;
         const isEnd   = index === (data.length - 1);
+        const isEmpty = data[0] === empty;
 
         const toStart = () => nextState(data, 0).next().value;
         const toEnd   = () => nextState(data, data.length - 1).next().value;
@@ -85,14 +94,19 @@ export const create = (data = [], options = defaultOptions) => {
          */
         const control = {
             data:           data[index],
-            empty:    () => data.length === 0,
             start:          toStart,
             end:            toEnd,
+            empty:    () => isEmpty,
+            size:     () => data.length,
             next:     () => isEnd   ? toStart() : nextState(data, index + 1).next().value,
             previous: () => isStart ? toEnd()   : nextState(data, index - 1).next().value,
+            delete:   () => nextState(data.filter((_, currentIndex) => currentIndex !== index), index).next().value
         };
 
         switch (true) {
+
+            // Determine if the list is empty.
+            case isEmpty:                yield omit(['delete'], control); break;
 
             // Determine if it's a singly-linked list.
             case isSingle(opts.type):    yield omit(['previous', 'start', 'end'], control); break;

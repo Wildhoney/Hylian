@@ -7,13 +7,19 @@ test('it throws an error when passing a non-array as the data attr;', t => {
 });
 
 test('it throws an error when passing a non-valid list type;', t => {
-    const error = t.throws(() => create([], { type: null }));
+    const error = t.throws(() => create([1, 2, 3, 4, 5], { type: null }));
     t.is(error.message, `Hylian: 'option.type' should be 'type.singly' or 'type.doubly'.`);
+});
+
+test('it throws an error when creating an empty list;', t => {
+    const error = t.throws(() => create([]));
+    t.is(error.message, `Hylian: 'option.data' should contain at least one item.`);
 });
 
 test('it should exclude the "previous" function when singly-linked', t => {
     const list = create([1, 2, 3], { type: listType.single });
     t.false(typeof list.start === 'function');
+    t.false(typeof list.end === 'function');
     t.false(typeof list.previous === 'function');
 });
 
@@ -31,7 +37,6 @@ test('it should be able to remove "next" and "previous" when traversing finitely
 
 test('it should be able to determine when the list is empty;', t => {
     t.true(create().empty());
-    t.true(create([]).empty());
     t.false(create([1, 2, 3]).empty());
 });
 
@@ -63,8 +68,15 @@ test('it should be able to traverse infinitely using next and previous;', t => {
 
 });
 
-// test('it should be able to remove a node from the list;', t => {
-//     const data = [1, 2, 3, 4, 5];
-//     const a    = create(data);
-//     const b    = a.delete();
-// });
+test('it should be able to remove a node from the list;', t => {
+    const data = [1, 2, 3, 4, 5];
+    const a    = create(data);
+    const b    = a.delete();
+    const c    = b.delete().delete().delete().delete();
+    t.is(a.size(), 5);
+    t.is(a.data, 1);
+    t.is(b.size(), 4);
+    t.is(b.data, 2);
+    t.true(c.empty());
+    t.true(typeof c.delete !== 'function');
+});
