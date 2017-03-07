@@ -13,20 +13,19 @@ test('it throws an error when passing a non-valid list type;', t => {
 
 test('it should exclude the "previous" function when singly-linked', t => {
 
-    const list = create([1, 2, 3], { type: listType.single });
+    const a = create([1, 2, 3], { type: listType.single });
 
-    t.false(typeof list.start === 'function');
-    t.false(typeof list.end === 'function');
-    t.false(typeof list.previous === 'function');
+    t.false(typeof a.start === 'function');
+    t.false(typeof a.end === 'function');
+    t.false(typeof a.previous === 'function');
 
 });
 
 test('it should be able to remove "next" and "previous" when traversing finitely;', t => {
 
-    const data = [1, 2, 3, 4, 5];
-    const a    = create(data, { finite: true });
-    const b    = a.next().next().next().next();
-    const c    = create(data, { finite: true });
+    const a = create([1, 2, 3, 4, 5], { finite: true });
+    const b = a.next().next().next().next();
+    const c = create([1, 2, 3, 4, 5], { finite: true });
 
     t.is(typeof b.next, 'undefined');
     t.is(typeof c.previous, 'undefined');

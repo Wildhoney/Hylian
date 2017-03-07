@@ -1,6 +1,6 @@
 {
   "name": "hylian",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Quick and easy doubly and singly linked immutable list implementation that allows for inserting, removing and shifting.",
   "main": "dist/hylian.js",
   "jsnext:main": "src/hylian.js",
