@@ -1,5 +1,5 @@
 import Symbol   from 'es6-symbol';
-import { omit, path } from 'ramda';
+import { omit } from 'ramda';
 
 /**
  * @constant listType
@@ -114,7 +114,7 @@ export const create = (xs = [empty], options = defaultOptions) => {
             data:           datum,
             clear:    () => next([empty], 0),
             empty:    () => isEmpty,
-            size:     () => data.length,
+            size:     () => isEmpty ? 0 : data.length,
             next:     () => isEnd   ? start() : next(data, index + 1),
             previous: () => isStart ? end()   : next(data, index - 1),
             insert:         isEmpty ? omit(['before', 'after'], insert) : insert,
@@ -150,4 +150,4 @@ export const create = (xs = [empty], options = defaultOptions) => {
 
 };
 
-export default { create, listType };
+export default create;
