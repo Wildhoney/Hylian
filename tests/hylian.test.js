@@ -47,6 +47,12 @@ test('it should be able to clear the list;', t => {
     t.true(create([1, 2, 3, 4, 5]).clear().empty());
 });
 
+test('it disallows inserting before and after when list is empty;', t => {
+    t.true(typeof create().insert.after !== 'function');
+    t.true(typeof create([]).insert.before !== 'function');
+    t.true(typeof create([1, 2, 3]).clear().insert.before !== 'function');
+});
+
 test('it should be able to traverse to the start and the end;', t => {
 
     const a = create([1, 2, 3, 4, 5]);
@@ -182,8 +188,30 @@ test('it should be able to remove after the current node;', t => {
 
 });
 
-// test('it should be able to combine all of the functions;', t => {
-//
-//     const a = create([1, 2, 3, 4, 5]);
-//
-// });
+test('it should be able to combine all of the functions;', t => {
+
+    const a = create([1, 2, 3, 4, 5]);
+    const b = a.previous();
+    const c = b.start().next();
+    const d = c.remove.after();
+    const e = d.next();
+    const f = e.insert.before(3).previous();
+    const g = f.remove.current();
+    const h = g.insert.before(3).start();
+    const i = h.insert.end(6, 7, 8).end();
+    const j = i.next().next();
+    const k = j.clear().insert.start(1, 2, 3).end();
+
+    t.is(a.data, 1);
+    t.is(b.data, 5);
+    t.is(c.data, 2);
+    t.is(d.data, 2);
+    t.is(e.data, 4);
+    t.is(f.data, 3);
+    t.is(g.data, 4);
+    t.is(h.data, 1);
+    t.is(i.data, 8);
+    t.is(j.data, 2);
+    t.is(k.data, 3);
+
+});

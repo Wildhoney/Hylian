@@ -1,5 +1,5 @@
 import Symbol   from 'es6-symbol';
-import { omit } from 'ramda';
+import { omit, path } from 'ramda';
 
 /**
  * @constant listType
@@ -94,6 +94,17 @@ export const create = (xs = [empty], options = defaultOptions) => {
         const without = x  => data.filter((_, index) => x !== index);
 
         /**
+         * @constant start
+         * @type {Object}
+         */
+        const insert = {
+            start:  (...xs) => isEmpty ? next(xs, 0) : next([...xs, ...data], index + xs.length),
+            before: (...xs) => isEmpty ? next(xs, 0) : next([...before(index), ...xs, datum, ...after(index)], index + xs.length),
+            after:  (...xs) => isEmpty ? next(xs, 0) : next([...before(index), datum, ...xs, ...after(index)], index),
+            end:    (...xs) => isEmpty ? next(xs, 0) : next([...data, ...xs], index),
+        };
+
+        /**
          * @constant control
          * @type {Object}
          */
@@ -106,16 +117,11 @@ export const create = (xs = [empty], options = defaultOptions) => {
             size:     () => data.length,
             next:     () => isEnd   ? start() : next(data, index + 1),
             previous: () => isStart ? end()   : next(data, index - 1),
-            remove:   {
+            insert:         isEmpty ? omit(['before', 'after'], insert) : insert,
+            remove: {
                 before:   () => isStart ? same() : next(without(index - 1), index - 1),
                 current:  () => next(without(index), index),
                 after:    () => isEnd ? same() : next(without(index + 1), index)
-            },
-            insert:   {
-                start:  (...xs) => next([...xs, ...data], index + xs.length),
-                before: (...xs) => next([...before(index), ...xs, datum, ...after(index)], index + xs.length),
-                after:  (...xs) => next([...before(index), datum, ...xs, ...after(index)], index),
-                end:    (...xs) => next([...data, ...xs], index),
             }
         };
 
