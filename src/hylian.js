@@ -1,5 +1,5 @@
-import Symbol   from 'es6-symbol';
-import { omit } from 'ramda';
+import Symbol from 'es6-symbol';
+import R      from 'ramda';
 
 /**
  * @constant listType
@@ -105,6 +105,15 @@ export const create = (xs = [empty], options = defaultOptions) => {
         };
 
         /**
+         * @constant shift
+         * @type {Object}
+         */
+        const shift = {
+            left:  () => next([...R.init(before(index)), datum, R.last(before(index)), ...after(index)], index - 1),
+            right: () => next([...before(index), R.head(after(index)), datum, ...R.tail(after(index))], index + 1)
+        };
+
+        /**
          * @constant control
          * @type {Object}
          */
@@ -121,7 +130,8 @@ export const create = (xs = [empty], options = defaultOptions) => {
             size:     () => isEmpty ? 0 : data.length,
             next:     () => isEnd   ? start() : next(data, index + 1),
             previous: () => isStart ? end()   : next(data, index - 1),
-            insert:         isEmpty ? omit(['before', 'after'], insert) : insert,
+            insert:         isEmpty ? R.omit(['before', 'after'], insert) : insert,
+            shift:          isStart ? R.omit(['left'], shift) : (isEnd ? R.omit(['right'], shift) : shift),
             remove: {
                 before:   () => isStart ? same() : next(without(index - 1), index - 1),
                 current:  () => next(without(index), index),
@@ -132,16 +142,16 @@ export const create = (xs = [empty], options = defaultOptions) => {
         switch (true) {
 
             // Determine if the list is empty.
-            case isEmpty:                return omit(['remove'], control);
+            case isEmpty:                return R.omit(['remove', 'clear', 'shift'], control);
 
             // Determine if it's a singly-linked list.
-            case isSingle(opts.type):    return omit(['previous', 'start', 'end'], control);
+            case isSingle(opts.type):    return R.omit(['previous', 'start', 'end'], control);
 
             // Determine if we're at the start of a finite list.
-            case opts.finite && isStart: return omit(['previous'], control);
+            case opts.finite && isStart: return R.omit(['previous'], control);
 
             // Determine if we're at the end of a finite list.
-            case opts.finite && isEnd:   return omit(['next'], control);
+            case opts.finite && isEnd:   return R.omit(['next'], control);
 
             // Otherwise we'll return the full controls.
             default:                     return control;

@@ -12,7 +12,7 @@ test('it throws an error when passing a non-valid list type;', t => {
 });
 
 test('it should be able determine when at the start and end;', t => {
-    
+
     const a = create([1, 2, 3, 4, 5]);
 
     t.true(a.is.start());
@@ -47,6 +47,19 @@ test('it should be able to determine when the list is empty;', t => {
     t.true(create().is.empty());
     t.true(create([]).is.empty());
     t.false(create([1, 2, 3]).is.empty());
+});
+
+test('it should be able to shifts items when at the start, end or empty;', t => {
+
+    const a = create([1, 2, 3], { index: 1 });
+
+    t.true(typeof create().shift !== 'function');
+    t.true(typeof create([1, 2, 3]).shift.left !== 'function');
+    t.true(typeof create([1, 2, 3], { index: 2 }).shift.right !== 'function');
+
+    t.true(typeof a.shift.right === 'function');
+    t.true(typeof a.shift.left === 'function');
+
 });
 
 test('it should not be able to remove from an empty list;', t => {
@@ -180,6 +193,19 @@ test('it should be able to remove before the current node;', t => {
     t.is(b.size(), 5);
     t.is(c.data, 3);
     t.is(c.size(), 4);
+
+});
+
+test('it should be able to shift items left and right;', t => {
+
+    const a = create([1, 2, 3, 4, 5]);
+    const b = a.next().next();
+
+    t.is(b.data, 3);
+    t.is(b.shift.left().data, 3);
+    t.is(b.shift.left().next().data, 2);
+    t.is(b.start().shift.right().data, 1);
+    t.is(b.start().shift.right().next().data, 3);
 
 });
 
