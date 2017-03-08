@@ -32,14 +32,16 @@ test('it should exclude the "previous" function when singly-linked', t => {
 
 });
 
-test('it should be able to remove "next" and "previous" when traversing finitely;', t => {
+test('it should be able to handle finite lists;', t => {
 
     const a = create([1, 2, 3, 4, 5], { finite: true });
     const b = a.next().next().next().next();
     const c = create([1, 2, 3, 4, 5], { finite: true });
 
-    t.is(typeof b.next, 'undefined');
-    t.is(typeof c.previous, 'undefined');
+    t.is(b.next().data, 5);
+    t.is(b.next().next().data, 5);
+    t.is(c.previous().data, 1);
+    t.is(c.previous().previous().data, 1);
 
 });
 
@@ -49,21 +51,21 @@ test('it should be able to determine when the list is empty;', t => {
     t.false(create([1, 2, 3]).is.empty());
 });
 
-test('it should be able to shifts items when at the start, end or empty;', t => {
+test('it should be able to restrict shifts in certain circumstances;', t => {
 
-    const a = create([1, 2, 3], { index: 1 });
+    const a = create([1, 2, 3]);
 
-    t.true(typeof create().shift !== 'function');
-    t.true(typeof create([1, 2, 3]).shift.left !== 'function');
-    t.true(typeof create([1, 2, 3], { index: 2 }).shift.right !== 'function');
-
-    t.true(typeof a.shift.right === 'function');
-    t.true(typeof a.shift.left === 'function');
+    t.is(a.shift.left().data, 1);
+    t.is(a.shift.left().next().data, 2);
+    t.is(a.end().shift.right().data, 3);
+    t.is(a.end().shift.right().previous().data, 2);
+    t.true(create().shift.right().is.empty());
 
 });
 
-test('it should not be able to remove from an empty list;', t => {
-    t.true(typeof create().delete !== 'function');
+test('it should not be able to remove or clear from an empty list;', t => {
+    t.true(create().clear().is.empty());
+    t.true(create().remove.current().is.empty());
 });
 
 test('it should be able to clear the list;', t => {
@@ -71,9 +73,8 @@ test('it should be able to clear the list;', t => {
 });
 
 test('it disallows inserting before and after when list is empty;', t => {
-    t.true(typeof create().insert.after !== 'function');
-    t.true(typeof create([]).insert.before !== 'function');
-    t.true(typeof create([1, 2, 3]).clear().insert.before !== 'function');
+    t.true(create([]).insert.before(4, 5, 6).is.empty());
+    t.true(create([1, 2, 3]).clear().insert.before(4).is.empty());
 });
 
 test('it should be able to traverse to the start and the end;', t => {

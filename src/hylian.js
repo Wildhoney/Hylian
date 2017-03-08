@@ -85,6 +85,7 @@ export const create = (xs = [empty], options = defaultOptions) => {
         const isStart = index === 0;
         const isEnd   = index === (data.length - 1);
         const isEmpty = datum === empty;
+        const isFinite = opts.finite === true;
 
         const start   = () => next(data, 0);
         const end     = () => next(data, data.length - 1);
@@ -92,26 +93,6 @@ export const create = (xs = [empty], options = defaultOptions) => {
         const after   = x  => data.filter((_, index) => x < index);
         const same    = () => next(data, index);
         const without = x  => data.filter((_, index) => x !== index);
-
-        /**
-         * @constant start
-         * @type {Object}
-         */
-        const insert = {
-            start:  (...xs) => isEmpty ? next(xs, 0) : next([...xs, ...data], index + xs.length),
-            before: (...xs) => isEmpty ? next(xs, 0) : next([...before(index), ...xs, datum, ...after(index)], index + xs.length),
-            after:  (...xs) => isEmpty ? next(xs, 0) : next([...before(index), datum, ...xs, ...after(index)], index),
-            end:    (...xs) => isEmpty ? next(xs, 0) : next([...data, ...xs], index),
-        };
-
-        /**
-         * @constant shift
-         * @type {Object}
-         */
-        const shift = {
-            left:  () => next([...R.init(before(index)), datum, R.last(before(index)), ...after(index)], index - 1),
-            right: () => next([...before(index), R.head(after(index)), datum, ...R.tail(after(index))], index + 1)
-        };
 
         /**
          * @constant control
@@ -128,35 +109,27 @@ export const create = (xs = [empty], options = defaultOptions) => {
             },
             clear:    () => next([empty], 0),
             size:     () => isEmpty ? 0 : data.length,
-            next:     () => isEnd   ? start() : next(data, index + 1),
-            previous: () => isStart ? end()   : next(data, index - 1),
-            insert:         isEmpty ? R.omit(['before', 'after'], insert) : insert,
-            shift:          isStart ? R.omit(['left'], shift) : (isEnd ? R.omit(['right'], shift) : shift),
+            next:     () => isEnd   ? (isFinite ? same() : start()) : next(data, index + 1),
+            previous: () => isStart ? (isFinite ? same() : end())   : next(data, index - 1),
+            insert:         {
+                start:  (...xs) => isEmpty ? next(xs, 0) : next([...xs, ...data], index + xs.length),
+                before: (...xs) => isEmpty ? same() : next([...before(index), ...xs, datum, ...after(index)], index + xs.length),
+                after:  (...xs) => isEmpty ? same() : next([...before(index), datum, ...xs, ...after(index)], index),
+                end:    (...xs) => isEmpty ? next(xs, 0) : next([...data, ...xs], index),
+            },
+            shift: {
+                left:  () => (isStart || isEmpty) ? same() : next([...R.init(before(index)), datum, R.last(before(index)), ...after(index)], index - 1),
+                right: () => (isEnd || isEmpty) ? same() : next([...before(index), R.head(after(index)), datum, ...R.tail(after(index))], index + 1)
+            },
             remove: {
-                before:   () => isStart ? same() : next(without(index - 1), index - 1),
-                current:  () => next(without(index), index),
-                after:    () => isEnd ? same() : next(without(index + 1), index)
+                before:   () => (isStart || isEmpty) ? same() : next(without(index - 1), index - 1),
+                current:  () => isEmpty ? same() : next(without(index), index),
+                after:    () => (isEnd || isEmpty) ? same() : next(without(index + 1), index)
             }
         };
 
-        switch (true) {
-
-            // Determine if the list is empty.
-            case isEmpty:                return R.omit(['remove', 'clear', 'shift'], control);
-
-            // Determine if it's a singly-linked list.
-            case isSingle(opts.type):    return R.omit(['previous', 'start', 'end'], control);
-
-            // Determine if we're at the start of a finite list.
-            case opts.finite && isStart: return R.omit(['previous'], control);
-
-            // Determine if we're at the end of a finite list.
-            case opts.finite && isEnd:   return R.omit(['next'], control);
-
-            // Otherwise we'll return the full controls.
-            default:                     return control;
-
-        }
+        // Determine if it's a singly-linked list, and if so remove specific controls.
+        return isSingle(opts.type) ? R.omit(['previous', 'start', 'end'], control) : control;
 
     }
 
