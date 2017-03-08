@@ -111,9 +111,13 @@ export const create = (xs = [empty], options = defaultOptions) => {
         const control = {
             start,
             end,
-            data:           datum,
+            data: datum,
+            is: {
+                start: () => isStart,
+                end:   () => isEnd,
+                empty: () => isEmpty,
+            },
             clear:    () => next([empty], 0),
-            empty:    () => isEmpty,
             size:     () => isEmpty ? 0 : data.length,
             next:     () => isEnd   ? start() : next(data, index + 1),
             previous: () => isStart ? end()   : next(data, index - 1),

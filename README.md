@@ -69,7 +69,7 @@ const d = b.next();
 console.log(a.data); // 1
 console.log(b.data); // 5 
 console.log(c.data); // 5 (index does not change)
-console.log(d.data); // 6;
+console.log(d.data); // 6
 
 console.log(d.size()); // 10
 ```

@@ -11,6 +11,17 @@ test('it throws an error when passing a non-valid list type;', t => {
     t.is(error.message, `Hylian: 'option.type' should be 'type.singly' or 'type.doubly'.`);
 });
 
+test('it should be able determine when at the start and end;', t => {
+    
+    const a = create([1, 2, 3, 4, 5]);
+
+    t.true(a.is.start());
+    t.true(a.end().is.end());
+    t.true(create().is.start());
+    t.true(create([]).end().is.end());
+
+});
+
 test('it should exclude the "previous" function when singly-linked', t => {
 
     const a = create([1, 2, 3], { type: listType.single });
@@ -33,9 +44,9 @@ test('it should be able to remove "next" and "previous" when traversing finitely
 });
 
 test('it should be able to determine when the list is empty;', t => {
-    t.true(create().empty());
-    t.true(create([]).empty());
-    t.false(create([1, 2, 3]).empty());
+    t.true(create().is.empty());
+    t.true(create([]).is.empty());
+    t.false(create([1, 2, 3]).is.empty());
 });
 
 test('it should not be able to remove from an empty list;', t => {
@@ -43,7 +54,7 @@ test('it should not be able to remove from an empty list;', t => {
 });
 
 test('it should be able to clear the list;', t => {
-    t.true(create([1, 2, 3, 4, 5]).clear().empty());
+    t.true(create([1, 2, 3, 4, 5]).clear().is.empty());
 });
 
 test('it disallows inserting before and after when list is empty;', t => {
