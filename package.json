@@ -7,7 +7,10 @@
   "scripts": {
     "build": "BABEL_ENV=production webpack",
     "test": "nyc ava && npm run report",
-    "report": "nyc report --reporter=html"
+    "report": "nyc report --reporter=html",
+    "watch": "webpack --config example/webpack.config.js --watch",
+    "create": "mkdir -p example/images && webpack --config example/webpack.config.js && babel example/tools/autocrop.js | node",
+    "start": "npm run create && babel example/server/default.js | node"
   },
   "repository": {
     "type": "git",
@@ -26,14 +29,18 @@
   "homepage": "https://github.com/Wildhoney/Hylian#readme",
   "devDependencies": {
     "ava": "^0.17.0",
-    "babel-loader": "^6.3.2",
+    "babel-loader": "~6.3.2",
     "babel-polyfill": "^6.22.0",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-stage-3": "^6.22.0",
     "babel-register": "^6.22.0",
+    "compression": "~1.6.2",
     "coveralls": "~2.11.15",
     "es6-symbol": "^3.1.0",
+    "express": "~4.14.0",
+    "jimp": "~0.2.27",
     "nyc": "~10.0.0",
+    "opener": "~1.4.2",
     "ramda": "^0.23.0",
     "webpack": "^2.2.1"
   },
