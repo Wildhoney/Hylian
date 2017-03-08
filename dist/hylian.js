@@ -7455,6 +7455,8 @@ var _es6Symbol2 = _interopRequireDefault(_es6Symbol);
 
 var _ramda = __webpack_require__(430);
 
+var _ramda2 = _interopRequireDefault(_ramda);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -7614,6 +7616,19 @@ var create = exports.create = function create() {
     };
 
     /**
+     * @constant shift
+     * @type {Object}
+     */
+    var shift = {
+      left: function left() {
+        return _next([].concat(_toConsumableArray(_ramda2.default.init(_before(index))), [datum, _ramda2.default.last(_before(index))], _toConsumableArray(_after(index))), index - 1);
+      },
+      right: function right() {
+        return _next([].concat(_toConsumableArray(_before(index)), [_ramda2.default.head(_after(index)), datum], _toConsumableArray(_ramda2.default.tail(_after(index)))), index + 1);
+      }
+    };
+
+    /**
      * @constant control
      * @type {Object}
      */
@@ -7621,11 +7636,19 @@ var create = exports.create = function create() {
       start: start,
       end: end,
       data: datum,
+      is: {
+        start: function start() {
+          return isStart;
+        },
+        end: function end() {
+          return isEnd;
+        },
+        empty: function empty() {
+          return isEmpty;
+        }
+      },
       clear: function clear() {
         return _next([empty], 0);
-      },
-      empty: function empty() {
-        return isEmpty;
       },
       size: function size() {
         return isEmpty ? 0 : data.length;
@@ -7636,7 +7659,8 @@ var create = exports.create = function create() {
       previous: function previous() {
         return isStart ? end() : _next(data, index - 1);
       },
-      insert: isEmpty ? (0, _ramda.omit)(['before', 'after'], insert) : insert,
+      insert: isEmpty ? _ramda2.default.omit(['before', 'after'], insert) : insert,
+      shift: isStart ? _ramda2.default.omit(['left'], shift) : isEnd ? _ramda2.default.omit(['right'], shift) : shift,
       remove: {
         before: function before() {
           return isStart ? same() : _next(without(index - 1), index - 1);
@@ -7654,19 +7678,19 @@ var create = exports.create = function create() {
 
       // Determine if the list is empty.
       case isEmpty:
-        return (0, _ramda.omit)(['remove'], control);
+        return _ramda2.default.omit(['remove', 'clear', 'shift'], control);
 
       // Determine if it's a singly-linked list.
       case isSingle(opts.type):
-        return (0, _ramda.omit)(['previous', 'start', 'end'], control);
+        return _ramda2.default.omit(['previous', 'start', 'end'], control);
 
       // Determine if we're at the start of a finite list.
       case opts.finite && isStart:
-        return (0, _ramda.omit)(['previous'], control);
+        return _ramda2.default.omit(['previous'], control);
 
       // Determine if we're at the end of a finite list.
       case opts.finite && isEnd:
-        return (0, _ramda.omit)(['next'], control);
+        return _ramda2.default.omit(['next'], control);
 
       // Otherwise we'll return the full controls.
       default:
