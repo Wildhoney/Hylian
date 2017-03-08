@@ -7,3 +7,11 @@ sudo: false
 
 after_success:
     - './node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls'
+
+deploy:
+  provider: heroku
+  api_key:
+    secure: k514Xh9mgl8wA5pdwck0bjucyYjDO63N9nZJSOqEHxSgh5aN4+4IwinfcB2+3ti4sXN4Fq7yWyRQecPTs4Gv0Hxv0qeBG2X94vfZS+R9LNFpCNPtrNXjzCrmw6Fmk4Y+Y7YI56s6Ak1xPEGPBZYHYe/2dsufP1yxFSqTECT0cnkplp/EeftKR1cm2jyQYU5tw2D3m5mmoE6Vd43J9E8a0fXP7ju1AFPYZaATR45dPo5T2b5Z11+fHXTELN+Nu5ky6jrHf/iETch3i1GOD4F6kD4p7g872pjcqTinzJvTIWB5waDidQQvyyuDKkxFRwp6z0B7jHLfPJpAgUGs2ljL58Y9bUdcUxm47Bmny26JNFW1L6I90yt+K0oRbRlQneaIunRj9jdYdI0AC8g8iyv+7Hv7N+SwmYCsBEM7/5eFnm633JaJsR4T5QtRvjon9sQqP01vosHXKe26YAF7MztWFKYQNf7Vxc4kvVVBxSeTGA7o1sRVYAaIBVY84IjsP5rPUK0yvG189OLYu4mhKlcgLT3O2hvypTdLIAserH9tIYD4EW14gYD6hJxtO6bsOHiIAfDeYMZ2ZdNirlKih71rggaWfRPZHNyXw4XgdjGzL/KgfQzagrWL9N80gznGBWtmbHAy1pZEdOTebNdtjwQdlx7kLRafq7HA04bD1OMmyDI=
+  app: hylian
+  on:
+    repo: Wildhoney/Hylian
