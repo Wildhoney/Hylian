@@ -40,7 +40,7 @@ const a = create([1, 2, 3, 4, 5]);
 const b = create([1, 2, 3, 4, 5], { finite: true });
 
 console.log(a.previous().data); // 5
-console.log(b.previous().data); // TypeError: `previous` is not a function.
+console.log(b.previous().data); // 5 (remains unchanged)
 ```
 
 By default `Hylian` uses doubly-linked lists, however by passing the `type` you can use singly-linked lists instead, which **only** allow you to traverse forward.
