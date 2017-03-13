@@ -15,7 +15,7 @@
 
 ## Getting Started
 
-:warning: Before you begin with `Hylian` it's crucial to note that `Hylian` uses immutability, and therefore may **not** be what you're expected from a linked list. When you perform *any* action on your list, a new list will be returned, rather than mutating the existing.
+> :warning: Before you begin with `Hylian` it's crucial to note that `Hylian` uses immutability, and therefore may **not** be what you're expected from a linked list. When you perform *any* action on your list, a new list will be returned, rather than mutating the existing.
 
 However if immutability is perfect for you, then let's dive straight in. All lists are instantiated by using `create` function &ndash; which is both a named export and the default export.
 
